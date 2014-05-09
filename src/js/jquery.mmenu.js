@@ -49,6 +49,7 @@
 		this.opts  = opts
 		this.conf  = conf;
 
+		this.isOpen = false;
 		this.serialnr = _serialnr++;
 
 		this._init();
@@ -132,45 +133,51 @@
 			//	Opening
 			glbl.$html.addClass( _c.opening );
 			this.$menu.trigger( _e.opening );
+			
+			this.isOpen = true;
 		},
 		close: function()
 		{
-			var that = this;
+			if ( this.isOpen ) {
+				var that = this;
 
-			//	Callback
-			transitionend( glbl.$page,
-				function()
-				{
-					that.$menu
-						.removeClass( _c.current )
-						.removeClass( _c.opened );
-
-					glbl.$html
-						.removeClass( _c.opened )
-						.removeClass( _c.modal )
-						.removeClass( _c.background )
-						.removeClass( _c.mm( that.opts.position ) )
-						.removeClass( _c.mm( that.opts.zposition ) );
-
-					if ( that.opts.classes )
+				//	Callback
+				transitionend( glbl.$page,
+					function()
 					{
-						glbl.$html.removeClass( that.opts.classes );
-					}
+						that.$menu
+							.removeClass( _c.current )
+							.removeClass( _c.opened );
 
-					//	Restore style and position
-					glbl.$page.attr( 'style', glbl.$page.data( _d.style ) );
+						glbl.$html
+							.removeClass( _c.opened )
+							.removeClass( _c.modal )
+							.removeClass( _c.background )
+							.removeClass( _c.mm( that.opts.position ) )
+							.removeClass( _c.mm( that.opts.zposition ) );
 
-					//	Closed
-					that.$menu.trigger( _e.closed );
+						if ( that.opts.classes )
+						{
+							glbl.$html.removeClass( that.opts.classes );
+						}
+
+						//	Restore style and position
+						glbl.$page.attr( 'style', glbl.$page.data( _d.style ) );
+
+						//	Closed
+						that.$menu.trigger( _e.closed );
 	
-				}, this.conf.transitionDuration
-			);
+					}, this.conf.transitionDuration
+				);
 
-			//	Closing
-			glbl.$html.removeClass( _c.opening );
-			this.$menu.trigger( _e.closing );
-	
-			return 'close';
+				//	Closing
+				glbl.$html.removeClass( _c.opening );
+				this.$menu.trigger( _e.closing );
+
+				this.isOpen = false;
+
+				return 'close';
+			}
 		},
 	
 		_init: function()
